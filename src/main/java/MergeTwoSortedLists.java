@@ -1,3 +1,8 @@
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Consumer;
+
 public class MergeTwoSortedLists {
     public static ListNode mergeTwoLists(ListNode list1, ListNode list2) {
         if (list1 == null) {
@@ -6,27 +11,24 @@ public class MergeTwoSortedLists {
         if (list2 == null) {
             return list1;
         }
-        ListNode listNode = mergeTwoLists(list1.next, list2.next);
-        if (listNode != null) {
-            if (list1.val > listNode.val) {
-                list1 = mergeTwoLists(list1, listNode);
-            } else if (list2.val > listNode.val) {
-                list2 = mergeTwoLists(list2, listNode);
-            }
+        List<ListNode> listNodes = new ArrayList<>();
+        forEach(list1, listNodes::add);
+        forEach(list2, listNodes::add);
+        listNodes.sort(Comparator.comparingInt(listNode -> listNode.val));
+        for (int i = 0; i < listNodes.size() - 1; i++) {
+            listNodes.get(i).next = listNodes.get(i + 1);
         }
-        if (list1.val < list2.val) {
-            list1.next = list2;
-            list2.next = listNode;
-            return list1;
-        } else {
-            list2.next = list1;
-            list1.next = listNode;
-            return list2;
+        return listNodes.getFirst();
+    }
+
+    static void forEach(ListNode listNode, Consumer<ListNode> consumer) {
+        consumer.accept(listNode);
+        if (listNode.next != null) {
+            forEach(listNode.next, consumer);
         }
     }
 
-
-     public static class ListNode {
+    public static class ListNode {
         int val;
         ListNode next;
 
